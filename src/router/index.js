@@ -1,7 +1,9 @@
 import Vue from "vue";
 import Router from "vue-router";
 // 路由组件
-import Home from "../views/Home.vue";
+import Recommend from "../views/Recommend.vue"; // 推荐
+import Rank from "../views/Rank.vue"; // 排行榜
+import Singer from "../views/Singer.vue"; // 歌手
 
 Vue.use(Router);
 
@@ -10,9 +12,21 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     {
+      // 默认跳转到 recommend
       path: "/",
-      name: "home",
-      component: Home
+      redirect: "/recommend"
+    },
+    {
+      path: "/recommend",
+      component: Recommend
+    },
+    {
+      path: "/rank",
+      component: Rank
+    },
+    {
+      path: "/singer",
+      component: Singer
     }
   ]
 });
