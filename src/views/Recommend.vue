@@ -4,15 +4,46 @@
       <div>
         <div v-show="banner.length" class="decorate" v-if="banner.length"></div>
         <div v-if="banner.length" class="slider-wrapper">
-          <slider>
-            <div
-              v-for="item in banner"
-              :key="item.id"
-              @click.stop="selectBanner(item)"
-            >
-              <img :src="item.imageUrl" />
+          <Slider>
+            <div v-for="item in banner" :key="item.id" class="slide-item">
+              <img class="item-img" :src="item.imageUrl" />
             </div>
-          </slider>
+          </Slider>
+        </div>
+        <div class="recommend-list" ref="recommendList">
+          <h1 class="title">推荐歌单</h1>
+          <ul>
+            <li class="item" v-for="item in playList" :key="item.id">
+              <div class="icon">
+                <div class="gradients"></div>
+                <img :src="item.picUrl" />
+              </div>
+              <p class="play-count">
+                <i class="fa fa-headphones"></i>
+                {{ Math.floor(item.playCount / 10000) }}万
+              </p>
+              <div class="text">
+                <p class="name">{{ item.name }}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="recommend-song" ref="recommendSong">
+          <h1 class="title">推荐歌曲</h1>
+          <ul>
+            <li
+              class="item"
+              v-for="item in recommendMusic"
+              :key="item.id"
+              @click="selectSong(item)"
+            >
+              <div class="icon">
+                <img :src="item.song.album.picUrl" />
+              </div>
+              <p class="text">{{ item.name }}</p>
+              <p class="singer">{{ item.singer }}</p>
+            </li>
+          </ul>
         </div>
       </div>
     </Scroll>
@@ -22,21 +53,35 @@
 <script>
 import Scroll from "@/base/Scroll";
 import Slider from "@/base/Slider";
-import { getBanner } from "@/api/api";
+import { getBanner, getRecommendList, getRecommendMusic } from "@/api/api";
 export default {
   data() {
     return {
-      banner: []
+      banner: [],
+      playList: [],
+      recommendMusic: []
     };
   },
   created() {
     this._getBanner();
+    this._getRecommendList();
+    this._getRecommendMusic();
   },
   methods: {
-    async _getBanner() {
-      const { banners } = (await getBanner()).data;
-      console.log(banners, "banner");
-      this.banner = banners;
+    _getBanner() {
+      getBanner().then(res => {
+        let list = res.data.banners;
+        this.banner = list.splice(4);
+      });
+    },
+    async _getRecommendList() {
+      const { result } = (await getRecommendList()).data;
+      this.playList = result;
+    },
+    async _getRecommendMusic() {
+      const { result } = (await getRecommendMusic()).data;
+      let results = result.splice(0, 9);
+      this.recommendMusic = results;
     }
   },
   components: {
